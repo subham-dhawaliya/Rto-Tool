@@ -22,6 +22,10 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'google_id',
+        'role',
+        'is_active',
+        'last_login_at',
     ];
 
     /**
@@ -43,7 +47,41 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+    
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return in_array($this->role, ['admin', 'super_admin']);
+    }
+    
+    /**
+     * Check if user is a super admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+    
+    /**
+     * Get activity logs for this admin
+     */
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class, 'admin_id');
+    }
+    
+    /**
+     * Get remarks created by this admin
+     */
+    public function remarks()
+    {
+        return $this->hasMany(AdminRemark::class, 'admin_id');
     }
 }
